@@ -107,7 +107,9 @@ export const handlePlanfixTaskCreation = async ({
         value: priority,
       },
     ],
-    participants: { users: [{ id: "contact:" + contactId }] },
+    counterparty: {
+      id: `contact:${contactId}`,
+    },
     assignees: {
       users: [
         {
