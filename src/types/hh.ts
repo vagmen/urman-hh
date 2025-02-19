@@ -90,6 +90,7 @@ export interface HHVacancy {
     name: string;
   };
   schedule: {
+    id: string;
     name: string;
   };
   employer: {
@@ -104,6 +105,10 @@ export interface HHVacancy {
   created_at: string;
   published_at: string;
   retryCount?: number;
+  work_format?: Array<{
+    id: string;
+    name: string;
+  }>;
 }
 
 export interface HHVacanciesResponse {

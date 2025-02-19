@@ -67,13 +67,16 @@ export const handlePlanfixTaskCreation = async ({
   priority = "3. Обычный",
   attachment,
   contactData,
+  isRemote = false,
 }: PlanfixTaskData): Promise<void> => {
   const token = process.env.PLANFIX_TOKEN;
 
   // Преобразуем проекты и программы в теги
-  const tags = [...contactData.projects, ...contactData.software].filter(
-    Boolean
-  );
+  const tags = [
+    ...(isRemote ? ["удалённо"] : []),
+    ...contactData.projects,
+    ...contactData.software,
+  ].filter(Boolean);
 
   if (!token) {
     throw new Error("PLANFIX_TOKEN is not set");
@@ -101,12 +104,6 @@ export const handlePlanfixTaskCreation = async ({
     status: {
       id: 220, // Статус "Переговоры"
     },
-    customFieldData: [
-      {
-        field: 133908,
-        value: priority,
-      },
-    ],
     counterparty: {
       id: `contact:${contactId}`,
     },

@@ -15,6 +15,7 @@ interface PlanfixTaskData {
     otherSkills: string;
     phone: string;
   };
+  isRemote?: boolean;
 }
 
 interface PlanfixContactData {

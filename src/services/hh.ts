@@ -222,6 +222,10 @@ export async function getNewResponses(): Promise<void> {
                 (resume.total_experience?.months || 0) / 12
               );
 
+              const isRemoteWork =
+                vacancy.schedule?.id === "remote" ||
+                vacancy.work_format?.some((format) => format.id === "REMOTE");
+
               await handlePlanfixTaskCreation({
                 name: `Отклик на вакансию: ${vacancy.name}`,
                 description: `
@@ -236,6 +240,9 @@ export async function getNewResponses(): Promise<void> {
                 <li>📍 Локация: ${resume.area?.name || "Не указана"}</li>
                 <li>👤 Возраст: ${resume.age || "Не указан"}</li>
                 <li>⏳ Общий опыт: ${totalExperienceYears} лет</li>
+                <li>💻 Формат работы: ${
+                  isRemoteWork ? "Удаленная работа" : "Офис"
+                }</li>
               </ul>
 
               <h3>Образование</h3>
@@ -256,6 +263,7 @@ export async function getNewResponses(): Promise<void> {
               }">🔗 Открыть резюме на HH.ru</a></p>
               `.trim(),
                 priority: "2. На неделе",
+                isRemote: isRemoteWork,
                 contactData: {
                   name: `${resume.first_name} ${resume.middle_name || ""} ${
                     resume.last_name
