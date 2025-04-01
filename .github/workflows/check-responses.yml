@@ -20,6 +20,13 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Download processed responses
+        uses: actions/download-artifact@v4
+        with:
+          name: processed-responses
+          path: ./
+        continue-on-error: true
+
       - name: Install dependencies
         run: npm ci
 
@@ -41,3 +48,10 @@ jobs:
           PLANFIX_API_SECRET: ${{ secrets.PLANFIX_API_SECRET }}
           PLANFIX_ACCOUNT: ${{ secrets.PLANFIX_ACCOUNT }}
         run: npm start
+
+      - name: Upload processed responses
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-responses
+          path: processed_responses.json
+          retention-days: 7
