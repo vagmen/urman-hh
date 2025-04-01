@@ -9,12 +9,11 @@ import type {
 } from "../types/hh";
 import { handlePlanfixTaskCreation } from "./planfix";
 import { isResponseProcessed, saveProcessedResponse } from "./storage";
+import { loadTokens, saveTokens } from "./tokenManager";
 
 config(); // Загружаем переменные окружения сразу
 
-// let accessToken: string = process.env.HH_ACCESS_TOKEN || "";
-let accessToken = process.env.HH_ACCESS_TOKEN;
-let refreshToken: string = process.env.HH_REFRESH_TOKEN || "";
+let { access_token: accessToken, refresh_token: refreshToken } = loadTokens();
 
 async function refreshAccessToken(): Promise<boolean> {
   try {
@@ -31,6 +30,10 @@ async function refreshAccessToken(): Promise<boolean> {
     if (response.data.access_token) {
       accessToken = response.data.access_token;
       refreshToken = response.data.refresh_token;
+
+      // Сохраняем токены в файл
+      saveTokens(accessToken, refreshToken);
+
       console.log("✅ Токен успешно обновлён!");
       return true;
     }
@@ -130,9 +133,40 @@ async function getResumeDetails(
   }
 }
 
+async function checkAndRefreshToken(): Promise<boolean> {
+  if (!accessToken) {
+    console.log("⚠️ Отсутствует токен доступа");
+    return false;
+  }
+
+  try {
+    // Проверяем токен через простой запрос к API
+    await axios.get(`${BASE_URL}/me`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "HH-User-Agent": "URMAN HH API/1.0 (proekt@urman.su)",
+      },
+    });
+    return true;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      console.log("🔄 Токен истёк, обновляем...");
+      return await refreshAccessToken();
+    }
+    return false;
+  }
+}
+
 export async function getNewResponses(): Promise<void> {
   console.log("🔄 Начинаем проверку новых откликов...");
   try {
+    // Проверяем и обновляем токен перед началом работы
+    const isTokenValid = await checkAndRefreshToken();
+    if (!isTokenValid) {
+      console.log("❌ Не удалось получить валидный токен");
+      return;
+    }
+
     const vacancies = await getCompanyVacancies();
 
     if (!vacancies.length) {
@@ -315,7 +349,7 @@ export async function getNewResponses(): Promise<void> {
         }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
-          console.log("🔄 Токен истёк, обновляем...");
+          console.log("�� Токен истёк, обновляем...");
           const tokenRefreshed = await refreshAccessToken();
           if (tokenRefreshed) {
             // Повторяем запрос с новым токеном
