@@ -69,7 +69,7 @@ export const handlePlanfixTaskCreation = async ({
   contactData,
   isRemote = false,
 }: PlanfixTaskData): Promise<void> => {
-  const token = process.env.PLANFIX_TOKEN;
+  const token = process.env.PLANFIX_API_KEY;
 
   // Преобразуем проекты и программы в теги
   const tags = [
@@ -79,7 +79,7 @@ export const handlePlanfixTaskCreation = async ({
   ].filter(Boolean);
 
   if (!token) {
-    throw new Error("PLANFIX_TOKEN is not set");
+    throw new Error("PLANFIX_API_KEY is not set");
   }
 
   // Создаем контакт
