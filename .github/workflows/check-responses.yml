@@ -26,10 +26,15 @@ jobs:
       - name: Build TypeScript
         run: npm run build
 
+      - name: Create tokens.json
+        run: |
+          echo '{
+            "access_token": "${{ secrets.HH_ACCESS_TOKEN }}",
+            "refresh_token": "${{ secrets.HH_REFRESH_TOKEN }}"
+          }' > tokens.json
+
       - name: Run check responses
         env:
-          HH_ACCESS_TOKEN: ${{ secrets.HH_ACCESS_TOKEN }}
-          HH_REFRESH_TOKEN: ${{ secrets.HH_REFRESH_TOKEN }}
           HH_CLIENT_ID: ${{ secrets.HH_CLIENT_ID }}
           HH_CLIENT_SECRET: ${{ secrets.HH_CLIENT_SECRET }}
           PLANFIX_API_KEY: ${{ secrets.PLANFIX_API_KEY }}
