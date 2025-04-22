@@ -3,3 +3,4 @@ dist/
 .env
 processed_responses.json
 tokens.json
+hh-auth.http
