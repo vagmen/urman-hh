@@ -183,7 +183,7 @@ async function checkAndRefreshToken(): Promise<boolean> {
   }
 }
 
-export async function getNewResponses(): Promise<void> {
+export async function getNewResponses(): Promise<{ processedCount: number }> {
   console.log("🔄 Начинаем проверку новых откликов...");
 
   // Проверяем наличие токенов
@@ -203,11 +203,13 @@ export async function getNewResponses(): Promise<void> {
 
   if (!vacancies.length) {
     console.log("⚠️ Нет активных вакансий для проверки");
-    return;
+    return { processedCount: 0 };
   }
 
   console.log("📋 Список активных вакансий:");
   vacancies.forEach((v) => console.log(`- ${v.name} (ID: ${v.id})`));
+
+  let processedCount = 0;
 
   for (const vacancy of vacancies) {
     console.log(`\n🔍 Проверяем отклики на вакансию: ${vacancy.name}`);
@@ -373,6 +375,7 @@ export async function getNewResponses(): Promise<void> {
             console.log(
               `✅ Создана задача для ${resume.first_name} ${resume.last_name}`
             );
+            processedCount++;
           } catch (error) {
             console.error(`❌ Ошибка создания задачи:`, error);
           }
@@ -539,6 +542,7 @@ export async function getNewResponses(): Promise<void> {
                 console.log(
                   `✅ Создана задача для ${resume.first_name} ${resume.last_name}`
                 );
+                processedCount++;
               } catch (error) {
                 console.error(`❌ Ошибка создания задачи:`, error);
               }
@@ -557,4 +561,5 @@ export async function getNewResponses(): Promise<void> {
   }
 
   console.log("✅ Проверка откликов завершена");
+  return { processedCount };
 }
