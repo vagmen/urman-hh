@@ -185,12 +185,19 @@ async function checkAndRefreshToken(): Promise<boolean> {
 
 export async function getNewResponses(): Promise<void> {
   console.log("🔄 Начинаем проверку новых откликов...");
+
+  // Проверяем наличие токенов
+  if (!accessToken || !refreshToken) {
+    throw new Error("Отсутствуют необходимые токены для работы с API hh.ru");
+  }
+
   try {
     // Проверяем и обновляем токен перед началом работы
     const isTokenValid = await checkAndRefreshToken();
     if (!isTokenValid) {
-      console.log("❌ Не удалось получить валидный токен");
-      return;
+      throw new Error(
+        "Не удалось получить валидный токен для работы с API hh.ru"
+      );
     }
 
     const vacancies = await getCompanyVacancies();

@@ -5,18 +5,14 @@ const tokenPath = path.resolve(__dirname, "../../tokens.json");
 
 export function loadTokens(): { access_token: string; refresh_token: string } {
   try {
-    console.log("📂 Загрузка файла processed_responses.json...");
+    console.log("📂 Загрузка файла tokens.json...");
     if (fs.existsSync(tokenPath)) {
       const data = fs.readFileSync(tokenPath, "utf-8");
-      const storage = JSON.parse(data);
-      console.log(
-        `✅ Файл загружен, найдено ${
-          Object.keys(storage.responses).length
-        } обработанных откликов`
-      );
-      return storage;
+      const tokens = JSON.parse(data);
+      console.log("✅ Файл tokens.json загружен");
+      return tokens;
     } else {
-      console.log("⚠️ Файл processed_responses.json не найден, создаем новый");
+      console.log("⚠️ Файл tokens.json не найден, используем значения из .env");
       return {
         access_token: process.env.HH_ACCESS_TOKEN || "",
         refresh_token: process.env.HH_REFRESH_TOKEN || "",
