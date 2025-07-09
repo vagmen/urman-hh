@@ -158,11 +158,14 @@ async function checkAndRefreshToken(): Promise<boolean> {
 
   try {
     console.log("🔍 Проверяем токен через API...");
-    // Проверяем токен через простой запрос к API
-    await axios.get(`${BASE_URL}/me`, {
+    // Проверяем токен через запрос к вакансиям (не требует специальных прав)
+    await axios.get(`${BASE_URL}/vacancies`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "HH-User-Agent": "URMAN HH API/1.0 (proekt@urman.su)",
+      },
+      params: {
+        per_page: 1,
       },
     });
     console.log("✅ Токен валиден!");
