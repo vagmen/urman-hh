@@ -12,15 +12,25 @@ console.log("🚀 Запуск сервиса проверки откликов 
 checkTokenExpiry();
 
 getNewResponses()
-  .then((result) => {
+  .then(async (result) => {
     console.log("✅ Скрипт выполнен успешно");
     // Отправляем уведомление об успехе (если есть результаты)
-    notifySuccess(result?.processedCount || 0);
+    try {
+      await notifySuccess(result?.processedCount || 0);
+      console.log("📱 Уведомление об успехе отправлено");
+    } catch (notifyErr) {
+      console.error("❌ Ошибка отправки уведомления:", notifyErr);
+    }
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(async (error) => {
     console.error("❌ Критическая ошибка:", error);
     // Отправляем уведомление об ошибке
-    notifyError(error, "Проверка откликов HH");
+    try {
+      await notifyError(error, "Проверка откликов HH");
+      console.log("📱 Уведомление об ошибке отправлено");
+    } catch (notifyErr) {
+      console.error("❌ Ошибка отправки уведомления:", notifyErr);
+    }
     process.exit(1);
   });
