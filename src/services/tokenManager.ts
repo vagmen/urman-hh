@@ -5,8 +5,23 @@ const tokenPath = path.resolve(__dirname, "../../tokens.json");
 
 export function loadTokens(): { access_token: string; refresh_token: string } {
   try {
-    const raw = fs.readFileSync(tokenPath, "utf-8");
-    return JSON.parse(raw);
+    console.log("📂 Загрузка файла processed_responses.json...");
+    if (fs.existsSync(tokenPath)) {
+      const data = fs.readFileSync(tokenPath, "utf-8");
+      const storage = JSON.parse(data);
+      console.log(
+        `✅ Файл загружен, найдено ${
+          Object.keys(storage.responses).length
+        } обработанных откликов`
+      );
+      return storage;
+    } else {
+      console.log("⚠️ Файл processed_responses.json не найден, создаем новый");
+      return {
+        access_token: process.env.HH_ACCESS_TOKEN || "",
+        refresh_token: process.env.HH_REFRESH_TOKEN || "",
+      };
+    }
   } catch (error) {
     console.error("❌ Ошибка при чтении токенов:", error);
     // Если файл не существует или поврежден, используем значения из .env
@@ -27,5 +42,27 @@ export function saveTokens(accessToken: string, refreshToken: string): void {
     console.log("✅ Токены успешно сохранены в tokens.json");
   } catch (error) {
     console.error("❌ Ошибка при сохранении токенов:", error);
+  }
+}
+
+// Проверяем, нужно ли обновить refresh token
+export function checkTokenExpiry(): void {
+  try {
+    if (fs.existsSync(tokenPath)) {
+      const data = JSON.parse(fs.readFileSync(tokenPath, "utf-8"));
+      const lastModified = fs.statSync(tokenPath).mtime;
+      const daysSinceUpdate =
+        (Date.now() - lastModified.getTime()) / (1000 * 60 * 60 * 24);
+
+      if (daysSinceUpdate > 25) {
+        console.log("⚠️ ВНИМАНИЕ: Refresh token может истечь в ближайшие дни!");
+        console.log(
+          `📅 Последнее обновление: ${lastModified.toLocaleDateString()}`
+        );
+        console.log("🔄 Рекомендуется получить новые токены через hh.ru");
+      }
+    }
+  } catch (error) {
+    console.error("❌ Ошибка при проверке срока действия токенов:", error);
   }
 }
