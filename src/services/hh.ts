@@ -18,16 +18,11 @@ let { access_token: accessToken, refresh_token: refreshToken } = loadTokens();
 async function refreshAccessToken(): Promise<boolean> {
   try {
     console.log("🔄 Начинаем обновление токена...");
-    console.log(
-      `📝 Client ID: ${process.env.HH_CLIENT_ID ? "есть" : "отсутствует"}`
-    );
-    console.log(
-      `📝 Client Secret: ${
-        process.env.HH_CLIENT_SECRET ? "есть" : "отсутствует"
-      }`
-    );
+    console.log(`📝 Client ID: ${process.env.HH_CLIENT_ID ? "есть" : "отсутствует"}`);
+    console.log(`📝 Client Secret: ${process.env.HH_CLIENT_SECRET ? "есть" : "отсутствует"}`);
     console.log(`📝 Refresh Token: ${refreshToken ? "есть" : "отсутствует"}`);
-
+    console.log(`📝 Refresh Token (первые 10 символов): ${refreshToken ? refreshToken.substring(0, 10) + "..." : "отсутствует"}`);
+    
     const response = await axios.post("https://hh.ru/oauth/token", null, {
       params: {
         grant_type: "refresh_token",
@@ -38,24 +33,30 @@ async function refreshAccessToken(): Promise<boolean> {
     });
 
     console.log("📡 Ответ от API:", response.status);
-
+    console.log("📡 Данные ответа:", JSON.stringify(response.data, null, 2));
+    
     if (response.data.access_token) {
       accessToken = response.data.access_token;
       refreshToken = response.data.refresh_token;
-
+      
       // Сохраняем токены в файл
       saveTokens(accessToken, refreshToken);
-
+      
       console.log("✅ Токен успешно обновлён!");
+      console.log(`📝 Новый Access Token (первые 10 символов): ${accessToken.substring(0, 10)}...`);
+      console.log(`📝 Новый Refresh Token (первые 10 символов): ${refreshToken.substring(0, 10)}...`);
       return true;
     }
     console.log("❌ В ответе нет access_token");
     return false;
   } catch (error) {
-    console.error(
-      "❌ Ошибка при обновлении токена:",
-      axios.isAxiosError(error) ? error.response?.data : error
-    );
+    console.error("❌ Ошибка при обновлении токена:");
+    if (axios.isAxiosError(error)) {
+      console.error("Статус:", error.response?.status);
+      console.error("Данные ошибки:", JSON.stringify(error.response?.data, null, 2));
+    } else {
+      console.error(error);
+    }
     return false;
   }
 }
