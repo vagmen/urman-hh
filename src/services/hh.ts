@@ -151,7 +151,7 @@ async function checkAndRefreshToken(): Promise<boolean> {
   console.log("🔍 Проверяем токены...");
   console.log(`📝 Access token: ${accessToken ? "есть" : "отсутствует"}`);
   console.log(`📝 Refresh token: ${refreshToken ? "есть" : "отсутствует"}`);
-
+  
   if (!accessToken) {
     console.log("⚠️ Отсутствует токен доступа");
     return false;
@@ -172,12 +172,11 @@ async function checkAndRefreshToken(): Promise<boolean> {
     console.log("✅ Токен валиден!");
     return true;
   } catch (error) {
-    console.log(
-      "❌ Токен невалиден, ошибка:",
-      axios.isAxiosError(error) ? error.response?.status : error
-    );
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      console.log("🔄 Токен истёк, обновляем...");
+    console.log("❌ Токен невалиден, ошибка:", axios.isAxiosError(error) ? error.response?.status : error);
+    
+    // Пытаемся обновить токен при любых ошибках авторизации
+    if (axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403)) {
+      console.log("🔄 Токен истёк или нет прав, обновляем...");
       return await refreshAccessToken();
     }
     return false;
