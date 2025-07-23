@@ -2,8 +2,8 @@ name: Check HH Responses
 
 on:
   schedule:
-    # Запуск каждые 10 минут
-    - cron: "*/10 * * * *"
+    # Запуск каждые 30 минут
+    - cron: "*/30 * * * *"
   # Позволяем запускать вручную
   workflow_dispatch:
 

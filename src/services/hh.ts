@@ -30,6 +30,13 @@ async function refreshAccessToken(): Promise<boolean> {
         client_secret: process.env.HH_CLIENT_SECRET,
         refresh_token: refreshToken,
       },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+      },
     });
 
     console.log("📡 Ответ от API:", response.status);
@@ -72,7 +79,11 @@ async function getCompanyVacancies(): Promise<HHVacancy[]> {
           per_page: 100,
         },
         headers: {
-          "HH-User-Agent": "URMAN HH API/1.0 (proekt@urman.su)",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json, text/plain, */*",
+          "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
         },
       }
     );
@@ -163,7 +174,11 @@ async function checkAndRefreshToken(): Promise<boolean> {
     await axios.get(`${BASE_URL}/vacancies`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "HH-User-Agent": "URMAN HH API/1.0 (proekt@urman.su)",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
       },
       params: {
         per_page: 1,
